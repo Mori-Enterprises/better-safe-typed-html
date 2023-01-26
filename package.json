@@ -1,6 +1,6 @@
 {
   "name": "better-safe-typed-html",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Type safe HTML JSX templates using TypeScript.",
   "main": "dist/elements.js",
   "typings": "dist/elements.d.ts",
