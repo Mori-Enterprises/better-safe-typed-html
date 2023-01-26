@@ -2,7 +2,6 @@
     "compilerOptions": {
         "module": "commonjs",
         "target": "es2018",
-        "esModuleInterop": true,
         "declaration": true,
         "composite": true,
         "declarationMap": true,
