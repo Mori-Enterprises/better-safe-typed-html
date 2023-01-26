@@ -1,8 +1,8 @@
 declare namespace JSX {
     interface IRenderNode {
-        toString(): string;
+        toDom(): Text | HTMLElement;
     }
-    type Element = IRenderNode | string;
+    type Element = IRenderNode;
     interface IntrinsicElements {
         a: HtmlAnchorTag;
         abbr: HtmlTag;

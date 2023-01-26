@@ -1,7 +1,7 @@
 declare namespace JSX {
     interface HtmlTag {
         accesskey?: string;
-        class?: string;
+        className?: string;
         contenteditable?: string;
         dir?: string;
         hidden?: string | boolean;
@@ -88,7 +88,7 @@ declare namespace JSX {
         type?: string;
         width?: string;
         height?: string;
-        [anything: string]: string | boolean | undefined;
+        [anything: string]: string | boolean | (() => void) | undefined;
     }
     interface HtmlFieldSetTag extends HtmlTag {
         disabled?: string;

@@ -25,7 +25,7 @@ declare namespace JSX {
         onkeydown?: string;
         onkeypress?: string;
         onkeyup?: string;
-        onclick?: string;
+        onclick?: string | (() => void);
         ondblclick?: string;
         ondrag?: string;
         ondragend?: string;

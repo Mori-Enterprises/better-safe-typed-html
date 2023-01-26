@@ -38,44 +38,6 @@ const toKebabCase = (camelCased: string) => {
     return kebabCased;
 };
 
-const escapeAttrNodeValue = (value: string) => {
-    return value.replace(/(&)|(")|(\u00A0)/g, function (_, amp, quote) {
-        if (amp) return '&amp;';
-        if (quote) return '&quot;';
-        return '&nbsp;';
-    });
-};
-
-const attributeToString = (attributes: Attributes) => (name: string): string => {
-    const value = attributes[name];
-    const formattedName = toKebabCase(name);
-    const makeAttribute = (value: string) => `${formattedName}="${value}"`;
-    if (value instanceof Date) {
-        return makeAttribute(value.toISOString());
-    } else switch (typeof value) {
-        case 'boolean':
-            // https://www.w3.org/TR/2008/WD-html5-20080610/semantics.html#boolean
-            if (value) {
-                return formattedName;
-            } else {
-                return '';
-            }
-        default:
-            return makeAttribute(escapeAttrNodeValue(value?.toString() ?? ''));
-    }
-};
-
-const attributesToString = (attributes: Attributes | undefined): string => {
-    if (attributes) {
-        return ' ' + Object.keys(attributes)
-            .map(attributeToString(attributes))
-            .filter(attribute => attribute.length) // filter out negative boolean attributes
-            .join(' ');
-    } else {
-        return '';
-    }
-};
-
 const flattenContents = (contents: (ContentType | Array<ContentType>)[]): ContentType[] => {
     const results: ContentType[] = [];
 
@@ -88,43 +50,20 @@ const flattenContents = (contents: (ContentType | Array<ContentType>)[]): Conten
         } else if (Array.isArray(content)) {
             results.push(...flattenContents(content as Array<ContentType | Array<ContentType>>));
         } else {
-            results.push(
-                ('' + content)
-                    .replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;")
-                    .replace(/"/g, "&quot;")
-            );
+            results.push('' + content);
         }
     }
 
     return results;
 }
 
-const isVoidElement = (tagName: string) => {
-    return [
-        'area',
-        'base',
-        'br',
-        'col',
-        'command',
-        'embed',
-        'hr',
-        'img',
-        'input',
-        'keygen',
-        'link',
-        'meta',
-        'param',
-        'source',
-        'track',
-        'wbr'
-    ].indexOf(tagName) > -1;
-};
-
 // Node for unescaped text
 export class TextNode implements JSX.IRenderNode {
     constructor(readonly contents: string) { }
+
+    toDom(): Text | HTMLElement {
+        return document.createTextNode(this.contents);
+    }
 
     toString(): string {
         return this.contents;
@@ -138,19 +77,26 @@ export class RenderNode implements JSX.IRenderNode {
         readonly children: ContentType[],
     ) { }
 
-    toString() {
-        if (isVoidElement(this.tagName) && !this.children.length) {
-            return `<${this.tagName}${attributesToString(this.attributes)}>`;
-        } else {
-            const contents: string = this.children.length > 0 ? this.children.map(child => {
-                if (typeof child === 'string') {
-                    return child;
-                } else {
-                    return child.toString();
-                }
-            }).join('') : '';
-            return `<${this.tagName}${attributesToString(this.attributes)}>${contents}</${this.tagName}>`;
+    toDom(): Text | HTMLElement {
+        const el = document.createElement(this.tagName);
+
+        for (const [attr, val] of Object.entries(this.attributes ?? {})) {
+            // @ts-ignore
+            el[attr] = val;
         }
+
+        for (const child of this.children) {
+            let childEl: Text | HTMLElement;
+            if (typeof child === 'string') {
+                childEl = document.createTextNode(child);
+            } else {
+                childEl = child.toDom();
+            }
+
+            el.appendChild(childEl);
+        }
+
+        return el;
     }
 }
 

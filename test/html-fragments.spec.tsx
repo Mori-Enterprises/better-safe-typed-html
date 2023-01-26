@@ -8,7 +8,7 @@ const singleLine = (input: string) => input.replace(/\r\n/g, '').replace(/\n/g, 
 
 const testEqual = (
     expected: string,
-    actual: () => JSX.IRenderNode,
+    actual: () => JSX.Element,
     itImplementation: (
         expectation: string,
         callback?: (this: Mocha.ITestCallbackContext, done: MochaDone) => any
@@ -28,7 +28,7 @@ describe('Simple html structures', () => {
     <li>2</li>
     </ul>`, () => <ul>{[1, 2].map(li => <li>{li}</li>)}</ul>);
     testEqual('<button onclick="doSomething"></button>', () => <button onclick="doSomething"></button>);
-    testEqual('<div class="class-a"></div>', () => <div class="class-a"></div>);
+    testEqual('<div class="class-a"></div>', () => <div className="class-a"></div>);
     testEqual('<script src="jquery.js" integrity="sha256-123=" crossorigin="anonymous"></script>', () => <script src="jquery.js" integrity="sha256-123=" crossorigin="anonymous"></script>);
 });
 
@@ -54,13 +54,13 @@ describe('Boolean attributes', () => {
 
 describe('Encoded attributes', () => {
     it('should encode " as &quot', () => {
-        expect((<div class={'\"'}></div>).toString()).to.eq('<div class="&quot;"></div>');
+        expect((<div className={'\"'}></div>).toString()).to.eq('<div class="&quot;"></div>');
     });
     it('should encode & as &amp', () => {
-        expect((<div class={'&'}></div>).toString()).to.eq('<div class="&amp;"></div>');
+        expect((<div className={'&'}></div>).toString()).to.eq('<div class="&amp;"></div>');
     });
     it('should encode \\u00A0 as &nbsp', () => {
-        expect((<div class={'\u00A0'}></div>).toString()).to.eq('<div class="&nbsp;"></div>');
+        expect((<div className={'\u00A0'}></div>).toString()).to.eq('<div class="&nbsp;"></div>');
     });
 });
 
@@ -101,7 +101,7 @@ describe('helper components', () => {
     const Header: elements.CustomElementHandler = (attributes, contents) => new elements.RenderNode('h1', attributes, contents);
 
     function Button(attributes: elements.Attributes | undefined, contents: string[]) {
-        return <button type='button' class='original-class' {...attributes}>{contents}</button>;
+        return <button type='button' className='original-class' {...attributes}>{contents}</button>;
     }
 
     testEqual('<h1 class="title"><span>Header Text</span></h1>', () => <Header class='title'><span>Header Text</span></Header>);

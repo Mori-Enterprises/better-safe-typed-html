@@ -43,7 +43,7 @@ Prints:
 Install:
 
 ```bash
-npm install --save safe-typed-html
+npm install --save better-safe-typed-html
 ```
 
 Configure your TypeScript compiler for JSX:
@@ -64,7 +64,7 @@ Now create a \*.ts**x** file. For example: `example.tsx` with the following cont
 
 ```typescript
 // example.tsx
-import * as elements from 'safe-typed-html';
+import * as elements from 'better-safe-typed-html';
 
 const w = 'world';
 const helloWorld = (<p>Hello <strong>{w}</strong></p>).toString();
@@ -78,23 +78,6 @@ However, the following piece of code will **NOT** compile:
 <foo></foo>; // => Error: Property 'foo' does not exist on type 'JSX.IntrinsicElements'.
 <a foo="bar"></a>; // => Error:  Property 'foo' does not exist on type 'HtmlAnchorTag'
 ```
-
-## Supported environments
-
-Typed HTML supports both NodeJS and (since 2.0) the browser.
-
-For use in the browser, either load typed-html as a module, or use a bundler like webpack or rollup to bundle the package for you.
-
-```ts
-// Direct ES import:
-import * as elements from './node_modules/safe-typed-html/dist/elements.js';
-// OR, when using a bundler like rollup or webpack
-import * as elements from 'safe-typed-html';
-```
-
-## Supported scenarios
-
-All template scenarios are supported with plain TypeScript.
 
 ### Control flow
 
